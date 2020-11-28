@@ -7,7 +7,7 @@
 Do uruchomienia aplikacji w systemie Windows i Linux użyte zostanie narzędzie
 pip oraz virtualenv. Do uruchomienia aplikacji potrzebny jest język python w wersji 3.6+
 
-#### Windows
+### Windows
 
 Przechodzimy do katalogu projektu
 ```
@@ -37,7 +37,7 @@ Uruchamiamy Aplikację
 ```
     python3 praca_inzynierska.py
 ```
-#### Linux
+### Linux
 Przechodzimy do katalogu projektu
 ```
     $ cd GUI_Praca_Inzynierska
