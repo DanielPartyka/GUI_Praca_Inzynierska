@@ -60,7 +60,7 @@ Instalujemy pakiety dla aplikacji
 ```
 Instalujemy osobno dodatkowy pakiet do aplikacji (występowały problemy z importem)
 ```
-    $ pip3 install --upgrade pyqt5=5.14.0
+    $ pip3 install --upgrade pyqt5==5.14.0
 ```
 Uruchamiamy Aplikację
 ```
