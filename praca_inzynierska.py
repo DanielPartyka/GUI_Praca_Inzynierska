@@ -4,11 +4,12 @@ from PyQt5.QtGui import QPixmap, QPen, QColor, QBrush, QFont, QImage
 from PyQt5.QtWidgets import QGraphicsRectItem, QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, \
     QGraphicsTextItem, QLabel
 from PIL import Image
-from window import Ui_AnotherWindow
 import cv2
 import pandas as pd
 import numpy as np
 import scipy.io
+
+from window import MainWindow1, rect_list
 
 wResultList = []
 sResultList = []
@@ -127,16 +128,22 @@ class StaticObject(QGraphicsRectItem):
                 tol.visibility_f()
 
     def mouseReleaseEvent(self,event):
+
+        self.set_net_of_spots_on_image()
+        Ui_MainWindow.open_new_window(self, 'temporary_images/obraz.png','Block: ' + str(StaticObject.get_id(self)),StaticObject.get_id(self))
+
+    def set_net_of_spots_on_image(self):
+
         image_o = Image.open(path_of_file)
         img = np.array(image_o)
         y0 = int(self.y())
         x0 = int(self.x())
         y1 = int(StaticObject.get_h(self) + int(self.y()))
         x1 = int(StaticObject.get_w(self) + int(self.x()))
-        npimg = image_o.crop((x0,y0,x1,y1))
+        npimg = image_o.crop((x0, y0, x1, y1))
         imsave = npimg.save('temporary_images/Mojobrazek.png')
 
-        imagee = cv2.imread('temporary_images/Mojobrazek.png')[...,::-1]
+        imagee = cv2.imread('temporary_images/Mojobrazek.png')[..., ::-1]
 
         alpha = alpha_beta[0]
         beta = alpha_beta[1]
@@ -192,13 +199,11 @@ class StaticObject(QGraphicsRectItem):
         for tol in textObjectList:
             if tol.id == int(StaticObject.get_id(self)):
                 tol.visibility_t()
-                tol.setPos(int(self.x()+35),int(self.y()))
+                tol.setPos(int(self.x() + 35), int(self.y()))
 
-        #change color of block after moving
+        # change color of block after moving
         self.setBrush(QBrush(QColor(0, 0, 255, 100)))
         self.setPen(QPen(QColor(0, 0, 0), 1.0, Qt.SolidLine))
-
-        Ui_MainWindow.open_new_window(self, 'temporary_images/obraz.png','Block: ' + str(StaticObject.get_id(self)))
 
 class MovingObject(QGraphicsRectItem):
     amount_of_spots = 0
@@ -261,13 +266,25 @@ class MovingObject(QGraphicsRectItem):
     # mouse hover event
 
 class Ui_MainWindow(object):
-    def open_new_window(self, image, name):
-        self.window = QtWidgets.QMainWindow()
-        self.window.setWindowTitle(name)
-        self.ui = Ui_AnotherWindow()
-        self.ui.setupUi(self.window)
-        self.ui.setImage(image)
-        self.window.show()
+    def open_new_window(self, image, name, block_id):
+        if block_id in rect_list:
+            if self.window.isHidden():
+                rect_list.remove(block_id)
+                self.window = QtWidgets.QMainWindow()
+                self.window.setWindowTitle(name)
+                self.ui = MainWindow1()
+                self.ui.setupUi(self.window)
+                self.ui.setImage(image, block_id)
+                self.window.show()
+            else:
+                self.ui.setImage(image,block_id)
+        else:
+            self.window = QtWidgets.QMainWindow()
+            self.window.setWindowTitle(name)
+            self.ui = MainWindow1()
+            self.ui.setupUi(self.window)
+            self.ui.setImage(image,block_id)
+            self.window.show()
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
