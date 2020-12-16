@@ -32,6 +32,7 @@ class Ui_AnotherWindow(object):
         self.scene_1.addPixmap(QPixmap('Image.png'))
         self.view.fitInView(self.scene_1.sceneRect(), Qt.KeepAspectRatio)
 
+    # Set an image on the new window
     def setImage(self, image,block_id):
         self.scene_1.clear()
         self.scene_1.addPixmap(QPixmap(image))
