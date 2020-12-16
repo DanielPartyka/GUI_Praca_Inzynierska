@@ -38,13 +38,13 @@ Instalujemy bibliotekę uamf
 * Uruchamiamy polecenia
 ```
     cd uamf-0.5.0
-    python setup.py instal
+    python setup.py install
     cd ..
 ```
  
 Uruchamiamy Aplikację
 ```
-    python3 praca_inzynierska.py
+    python praca_inzynierska.py
 ```
 ### Linux
 Przechodzimy do katalogu projektu
