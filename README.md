@@ -33,6 +33,12 @@ Instalujemy pakiety dla aplikacji
 ```
     python -m pip install -r requirements/requirements_windows.txt
 ```
+Instalujemy bibliotekę uamf
+```
+    cd imported_library_uamf/uamf-0.5.0
+    python setup.py install
+```
+ 
 Uruchamiamy Aplikację
 ```
     python3 praca_inzynierska.py
@@ -61,6 +67,11 @@ Instalujemy pakiety dla aplikacji
 Instalujemy osobno dodatkowy pakiet do aplikacji (występowały problemy z importem)
 ```
     $ pip3 install --upgrade pyqt5==5.14.0
+```
+Instalujemy bibliotekę uamf
+```
+    cd imported_library_uamf/uamf-0.5.0
+    python setup.py install
 ```
 Uruchamiamy Aplikację
 ```
