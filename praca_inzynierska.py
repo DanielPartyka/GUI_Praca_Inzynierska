@@ -25,14 +25,15 @@ textObjectList = []
 # Block index and object dictionary
 block_definition_dict = {}
 # Contrast and brightness values
-alpha_beta = [50,10]
+alpha_beta = [50, 10]
+
 
 # class, stands for block numeration
 class NumerationOfSpot(QGraphicsTextItem):
-    def __init__(self,id):
+    def __init__(self, id):
         super().__init__()
         self.id = id
-        self.setPos(0,0)
+        self.setPos(0, 0)
         self.setFont(QFont('Times', 80))
         self.setDefaultTextColor((QColor(255, 255, 255, 100)))
 
@@ -45,13 +46,15 @@ class NumerationOfSpot(QGraphicsTextItem):
     def visibility_t(self):
         self.setVisible(True)
 
+
 # class, stands for block created by block definition
 class StaticObject(QGraphicsRectItem):
     x0cord = 0
     x1cord = 0
     y0cord = 0
     y1cord = 0
-    def __init__(self, x, y, w, h,id):
+
+    def __init__(self, x, y, w, h, id):
         super().__init__(0, 0, w, h)
         self.id = id
         self.w = w
@@ -78,16 +81,16 @@ class StaticObject(QGraphicsRectItem):
     def get_h(self):
         return self.h
 
-    def set_x0cord(self,x0):
+    def set_x0cord(self, x0):
         StaticObject.x0cord = x0
 
-    def set_x1cord(self,x1):
+    def set_x1cord(self, x1):
         StaticObject.x1cord = x1
 
-    def set_y0cord(self,y0):
+    def set_y0cord(self, y0):
         StaticObject.y0cord = y0
 
-    def set_y1cord(self,y1):
+    def set_y1cord(self, y1):
         StaticObject.y1cord = y1
 
     def get_x0cord(self):
@@ -102,7 +105,7 @@ class StaticObject(QGraphicsRectItem):
     def get_y1cord(self):
         return StaticObject.y1cord
 
-    def set_amount_of_spots(self,value):
+    def set_amount_of_spots(self, value):
         StaticObject.amount_of_spots = value
 
     def get_amount_of_spots(self):
@@ -136,13 +139,14 @@ class StaticObject(QGraphicsRectItem):
         block_size_y = StaticObject.get_h(self)
 
         # Checking image borders
-        if updated_cursor_x >= 0 and updated_cursor_y >= 0 and updated_cursor_x <= im_size[1] - block_size_x and updated_cursor_y <= im_size[0] - block_size_y:
-                self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
-                # Updating the cords of block
-                block_definition_dict[StaticObject.get_id(self)].position.x = x0
-                block_definition_dict[StaticObject.get_id(self)].position.y = y0
-                block_definition_dict[StaticObject.get_id(self)].width = x1
-                block_definition_dict[StaticObject.get_id(self)].height = y1
+        if updated_cursor_x >= 0 and updated_cursor_y >= 0 and updated_cursor_x <= im_size[
+            1] - block_size_x and updated_cursor_y <= im_size[0] - block_size_y:
+            self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
+            # Updating the cords of block
+            block_definition_dict[StaticObject.get_id(self)].position.x = x0
+            block_definition_dict[StaticObject.get_id(self)].position.y = y0
+            block_definition_dict[StaticObject.get_id(self)].width = x1
+            block_definition_dict[StaticObject.get_id(self)].height = y1
 
         # Change color of block after moving
         self.setBrush(QBrush(QColor(0, 0, 255, 100)))
@@ -155,10 +159,11 @@ class StaticObject(QGraphicsRectItem):
             if tol.id == int(StaticObject.get_id(self)):
                 tol.visibility_f()
 
-    def mouseReleaseEvent(self,event):
+    def mouseReleaseEvent(self, event):
 
         self.set_net_of_spots_on_image()
-        Ui_MainWindow.open_new_window(self, 'temporary_images/temporaryimage1.png','Block: ' + str(StaticObject.get_id(self)),StaticObject.get_id(self))
+        Ui_MainWindow.open_new_window(self, 'temporary_images/temporaryimage1.png',
+                                      'Block: ' + str(StaticObject.get_id(self)), StaticObject.get_id(self))
 
     # Function which creates a spot net in block
     def set_net_of_spots_on_image(self):
@@ -231,6 +236,7 @@ class StaticObject(QGraphicsRectItem):
                 tol.visibility_t()
                 tol.setPos(int(self.x() + 35), int(self.y()))
 
+
 # Main window class
 class Ui_MainWindow(object):
     # Generate a new window
@@ -245,13 +251,13 @@ class Ui_MainWindow(object):
                 self.ui.setImage(image, block_id)
                 self.window.show()
             else:
-                self.ui.setImage(image,block_id)
+                self.ui.setImage(image, block_id)
         else:
             self.window = QtWidgets.QMainWindow()
             self.window.setWindowTitle(name)
             self.ui = MainWindow1()
             self.ui.setupUi(self.window)
-            self.ui.setImage(image,block_id)
+            self.ui.setImage(image, block_id)
             self.window.show()
 
     def setupUi(self, MainWindow):
@@ -303,7 +309,9 @@ class Ui_MainWindow(object):
         self.tableWidget.setGeometry(QtCore.QRect(50, 50, 1811, 771))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(11)
-        self.tableWidget.setHorizontalHeaderLabels(['Block number','x0 (pixels)','y0 (pixels)','x1 (pixels)','y1 (pixels)','width (pixels)','height (pixels)','rows number','column number', 'amount of spots', 'Modified'])
+        self.tableWidget.setHorizontalHeaderLabels(
+            ['Block number', 'x0 (pixels)', 'y0 (pixels)', 'x1 (pixels)', 'y1 (pixels)', 'width (pixels)',
+             'height (pixels)', 'rows number', 'column number', 'amount of spots', 'Modified'])
         self.tableWidget.setColumnWidth(0, 163)
         self.tableWidget.setColumnWidth(1, 163)
         self.tableWidget.setColumnWidth(2, 163)
@@ -388,26 +396,28 @@ class Ui_MainWindow(object):
         size = self.pixmap.size()
         scaled_pixmap = self.pixmap.scaled(self.scale * size)
         self.scene.addPixmap(scaled_pixmap)
-        self.view.fitInView(self.scene.sceneRect(),Qt.KeepAspectRatio)
+        self.view.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
         self.label.setText("No image uploaded, you have to upload an image")
         self.label_8.setText("No block definition uploaded, you have to load the definition of blocks")
-        self.label_2.setText("No block definition uploaded, you have to load the definition of blocks to see table results")
+        self.label_2.setText(
+            "No block definition uploaded, you have to load the definition of blocks to see table results")
         self.actionOpenBlockDef.setVisible(False)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "GUI wspomagające proces postprocessingu obrazów mikromacierzowych"))
+        MainWindow.setWindowTitle(
+            _translate("MainWindow", "GUI wspomagające proces postprocessingu obrazów mikromacierzowych"))
         MainWindow.setStyleSheet(open("QSS/style.qss", "r").read())
         self.label.setText(_translate("MainWindow", "TextLabel"))
         self.label_8.setText(_translate("MainWindow", "TextLabel"))
         self.label_3.setText(_translate("MainWindow", "Value of Alpha (Contrast)"))
         self.label_4.setText(_translate("MainWindow", "Value of Beta (Brightness)"))
-        self.pushButton.setText(_translate("MainWindow","Change"))
+        self.pushButton.setText(_translate("MainWindow", "Change"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Blocks on image"))
         self.label_2.setText(_translate("MainWindow", "TextLabel"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Table with results"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
-        self.actionOpenBlockDef.setText(_translate("MainWindow","Open block definition"))
+        self.actionOpenBlockDef.setText(_translate("MainWindow", "Open block definition"))
         self.menuSave_as.setTitle(_translate("MainWindow", "Save results as"))
         self.actionOpen.setText(_translate("MainWindow", "Open Image"))
         self.actionHTML.setText(_translate("MainWindow", "HTML"))
@@ -459,7 +469,6 @@ class Ui_MainWindow(object):
                         name_of_block_location_folder = os.path.split(st)[-1]
 
                 image = path_of_file
-
                 moveObjectList.clear()
                 textObjectList.clear()
                 rect_list.clear()
@@ -469,12 +478,12 @@ class Ui_MainWindow(object):
                 self.scene.addPixmap(QPixmap(image))
 
                 Number_Of_Files = 0
-                path = os.path.dirname(__file__)
-                path_of_mat = path + "/MatReading/" + name_of_block_location_folder
+                ROOT_DIR = os.path.abspath(os.curdir)
+                p = str(ROOT_DIR) + "/MatReading/"
+                fixed_path = p + name_of_block_location_folder
+                path_of_mat = os.path.abspath(fixed_path)
 
-                for files in os.walk(path_of_mat):
-                    for files in path:
-                        Number_Of_Files = Number_Of_Files + 1
+                Number_Of_Files = 48
 
                 tif = image.split('/')[-1]
                 tif2 = tif.split('.')[-1]
@@ -489,7 +498,7 @@ class Ui_MainWindow(object):
 
                 im_size = w, h
                 # amount of blocks
-                n = Number_Of_Files - 4
+                n = Number_Of_Files
                 counter = 0
                 if n >= 3:
                     for i in range(0, n):
@@ -497,13 +506,19 @@ class Ui_MainWindow(object):
                         for files in os.walk(path_of_mat):
                             for f in files:
                                 for x in f:
-                                    if str(i+1) in x:
-                                        mat_path = x
-                                        break
+                                    if i < 9:
+                                        if str('0' + str(i + 1)) in x:
+                                            mat_path = x
+                                            break
+                                    else:
+                                        if str(i + 1) in x:
+                                            mat_path = x
+                                            break
 
                         # Reading MetaData from .mat files
                         mat = scipy.io.loadmat('MatReading/' + name_of_block_location_folder + '/' + mat_path)
                         math_key = mat_path.split('.')
+
                         posy = mat[math_key[0]]['blockHeightPix'][0][0][0][0]
                         posx = mat[math_key[0]]['blockWidthPix'][0][0][0][0]
                         centerx = mat[math_key[0]]['blockCornerX'][0][0][0][0]
@@ -512,9 +527,10 @@ class Ui_MainWindow(object):
                         amount_of_rows = mat[math_key[0]]['nRows'][0][0][0][0]
                         amount_of_spots = mat[math_key[0]]['nFeatures'][0][0][0][0]
 
-                        block = BlockMeta(mat_path, Size(posy, posx), amount_of_rows, amount_of_columns, amount_of_spots, mat_path, Point(centerx,centery),list)
-                        block_definition_dict[i+1] = block
-                        block_definition_dict['block' + str(i+1)] = 'No'
+                        block = BlockMeta(mat_path, Size(posy, posx), amount_of_rows, amount_of_columns,
+                                          amount_of_spots, mat_path, Point(centerx, centery), list)
+                        block_definition_dict[i + 1] = block
+                        block_definition_dict['block' + str(i + 1)] = 'No'
 
                         # Draw blocks on image
                         if counter == 0:
@@ -581,7 +597,7 @@ class Ui_MainWindow(object):
         except Exception:
             msg = QMessageBox()
             msg.setWindowTitle("Block definition")
-            msg.setText("Something went wrong with loading block definition " +  str(traceback.print_exc()))
+            msg.setText("Something went wrong with loading block definition " + str(traceback.print_exc()))
             msg.setIcon(QMessageBox.Information)
             x = msg.exec_()
 
@@ -616,7 +632,8 @@ class Ui_MainWindow(object):
             msg.setText("The contrast have been set to: " + str(alpha))
         elif alpha_changed == False and beta_changed == True:
             msg.setText("The brightness have been to: " + str(beta))
-        else: msg.setText("Nothing changed")
+        else:
+            msg.setText("Nothing changed")
 
         msg.setIcon(QMessageBox.Information)
         x = msg.exec_()
@@ -625,13 +642,15 @@ class Ui_MainWindow(object):
     def save_results(self, save_as):
         try:
             sResultList = []
-            for i in range(0,48):
-                sResultList.append([block_definition_dict[i+1].position.x,block_definition_dict[i+1].position.y,
-                                    block_definition_dict[i+1].width + block_definition_dict[i+1].position.x,
-                                    block_definition_dict[i+1].height + block_definition_dict[i+1].position.y,
-                                    block_definition_dict[i+1].width, block_definition_dict[i+1].height,
-                                    block_definition_dict[i+1].rows_number, block_definition_dict[i+1].columns_number,
-                                    block_definition_dict[i+1].spots_number, block_definition_dict['block' + str(i+1)]])
+            for i in range(0, 48):
+                sResultList.append([block_definition_dict[i + 1].position.x, block_definition_dict[i + 1].position.y,
+                                    block_definition_dict[i + 1].width + block_definition_dict[i + 1].position.x,
+                                    block_definition_dict[i + 1].height + block_definition_dict[i + 1].position.y,
+                                    block_definition_dict[i + 1].width, block_definition_dict[i + 1].height,
+                                    block_definition_dict[i + 1].rows_number,
+                                    block_definition_dict[i + 1].columns_number,
+                                    block_definition_dict[i + 1].spots_number,
+                                    block_definition_dict['block' + str(i + 1)]])
             if not sResultList:
                 msg = QMessageBox()
                 msg.setWindowTitle("Saving data")
@@ -644,8 +663,10 @@ class Ui_MainWindow(object):
                 res = QFileDialog.getSaveFileName()
                 name_of_file = res[0].split('/')
 
-                df = pd.DataFrame(sResultList, index=list(range(1,len(sResultList)+1)), columns=list(['x0 (pixels)','y0 (pixels)','x1 (pixels)','y1 (pixels)',
-                                                            'width (pixels)','height (pixels)','rows number','columns number', 'amount of spots', 'Modified']))
+                df = pd.DataFrame(sResultList, index=list(range(1, len(sResultList) + 1)),
+                                  columns=list(['x0 (pixels)', 'y0 (pixels)', 'x1 (pixels)', 'y1 (pixels)',
+                                                'width (pixels)', 'height (pixels)', 'rows number', 'columns number',
+                                                'amount of spots', 'Modified']))
                 if save_as == 'html':
                     df.to_html(res[0] + '.html')
 
@@ -716,18 +737,22 @@ class Ui_MainWindow(object):
                 self.scene.clear()
                 # Checking if files are in in /Images folder
                 ROOT_DIR = os.path.abspath(os.curdir)
-                file_n =  image.split('/')[-1]
+                file_n = image.split('/')[-1]
 
                 image_folder_file = ROOT_DIR + '/Images'
                 fixed_image_folder = os.path.abspath(image_folder_file)
+                if os.path.isdir(fixed_image_folder) == False:
+                    os.makedirs(fixed_image_folder)
+
                 file_nd = '/Images/' + file_n
                 p = str(ROOT_DIR) + file_nd
                 fixed_path = os.path.abspath(p)
                 if os.path.exists(fixed_path) == False:
-                    buttonReply = QMessageBox.question(self, 'Image', "Do you want save Image to the Image storage folder?",
+                    buttonReply = QMessageBox.question(self, 'Image',
+                                                       "Do you want save Image to the Image storage folder?",
                                                        QMessageBox.Yes | QMessageBox.No)
                     if buttonReply == QMessageBox.Yes:
-                        shutil.copy(image,fixed_image_folder)
+                        shutil.copy(image, fixed_image_folder)
                     else:
                         pass
                 else:
@@ -756,7 +781,8 @@ class Ui_MainWindow(object):
             else:
                 msg = QMessageBox()
                 msg.setWindowTitle("Image")
-                if image.endswith('.png') or image.endswith('.jpg') or image.endswith('.tif') or image.endswith('.jpeg') or not image:
+                if image.endswith('.png') or image.endswith('.jpg') or image.endswith('.tif') or image.endswith(
+                        '.jpeg') or not image:
                     msg.setText("Opening photo has been canceled")
                 else:
                     msg.setText("Invalid format of file. Files must end with extension .png .jpg .tif .jpeg")
@@ -764,17 +790,17 @@ class Ui_MainWindow(object):
                 x = msg.exec_()
 
         except Exception:
-                msg = QMessageBox()
-                msg.setWindowTitle("Image")
-                msg.setText("There is a problem with image opening: " + str(traceback.print_exc()))
-                msg.setIcon(QMessageBox.Information)
-                x = msg.exec_()
+            msg = QMessageBox()
+            msg.setWindowTitle("Image")
+            msg.setText("There is a problem with image opening: " + str(traceback.print_exc()))
+            msg.setIcon(QMessageBox.Information)
+            x = msg.exec_()
 
     # Function that inform user that he will lose data if continue
     def change_spot_definition(self):
-        if len(block_definition_dict)>0:
-            buttonRep = QMessageBox.question(self, 'Result Data',"Do you want to continue? Unsaved data will be lost",
-                                               QMessageBox.Yes | QMessageBox.Cancel)
+        if len(block_definition_dict) > 0:
+            buttonRep = QMessageBox.question(self, 'Result Data', "Do you want to continue? Unsaved data will be lost",
+                                             QMessageBox.Yes | QMessageBox.Cancel)
             if buttonRep == QMessageBox.Yes:
                 self.define_block_spot()
             else:
@@ -782,18 +808,25 @@ class Ui_MainWindow(object):
         else:
             self.define_block_spot()
 
-    # Delete the MatReading and it's content
+    # Delete the MatReadingi and it's content
     def clear_MatReading_folder(self):
-        path = os.path.dirname(__file__)
-        path_full = path + "/MatReading"
-        shutil.rmtree(path_full)
-        os.makedirs(path_full)
-
+        # Checking if mat folder exists
+        ROOT_DIR = os.path.abspath(os.curdir)
+        matfolderfile = ROOT_DIR + '/MatReading'
+        f_matfolderfile = os.path.abspath(matfolderfile)
+        if os.path.isdir(f_matfolderfile) == False:
+            os.makedirs(matfolderfile)
+        else:
+            p = str(ROOT_DIR) + "/MatReading"
+            fixed_path = os.path.abspath(p)
+            shutil.rmtree(fixed_path)
+            os.makedirs(fixed_path)
 
     # Change an image
     def add_im(self):
-        if len(block_definition_dict)>0:
-            buttonReply = QMessageBox.question(self, 'Result Data', "Do you want to continue? Unsaved data will be lost",
+        if len(block_definition_dict) > 0:
+            buttonReply = QMessageBox.question(self, 'Result Data',
+                                               "Do you want to continue? Unsaved data will be lost",
                                                QMessageBox.Yes | QMessageBox.Cancel)
             if buttonReply == QMessageBox.Yes:
                 block_definition_dict.clear()
@@ -816,20 +849,25 @@ class Ui_MainWindow(object):
         i = 0
         row = 0
         self.tableWidget.setRowCount(amount_of_blocks)
-        for i in range(0,amount_of_blocks):
-            self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(str(i+1)))
-            self.tableWidget.setItem(row, 1 ,QtWidgets.QTableWidgetItem(str(block_definition_dict[i + 1].position.x)))
+        for i in range(0, amount_of_blocks):
+            self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(str(i + 1)))
+            self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(str(block_definition_dict[i + 1].position.x)))
             self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(str(block_definition_dict[i + 1].position.y)))
-            self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(str(block_definition_dict[i + 1].width + block_definition_dict[i + 1].position.x)))
-            self.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(str(block_definition_dict[i + 1].height + block_definition_dict[i + 1].position.y)))
+            self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(
+                str(block_definition_dict[i + 1].width + block_definition_dict[i + 1].position.x)))
+            self.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(
+                str(block_definition_dict[i + 1].height + block_definition_dict[i + 1].position.y)))
             self.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem(str(block_definition_dict[i + 1].width)))
             self.tableWidget.setItem(row, 6, QtWidgets.QTableWidgetItem(str(block_definition_dict[i + 1].height)))
             self.tableWidget.setItem(row, 7, QtWidgets.QTableWidgetItem(str(block_definition_dict[i + 1].rows_number)))
-            self.tableWidget.setItem(row, 8, QtWidgets.QTableWidgetItem(str(block_definition_dict[i + 1].columns_number)))
+            self.tableWidget.setItem(row, 8,
+                                     QtWidgets.QTableWidgetItem(str(block_definition_dict[i + 1].columns_number)))
             self.tableWidget.setItem(row, 9, QtWidgets.QTableWidgetItem(str(block_definition_dict[i + 1].spots_number)))
-            self.tableWidget.setItem(row, 10, QtWidgets.QTableWidgetItem(str(block_definition_dict['block' + str(i+1)])))
+            self.tableWidget.setItem(row, 10,
+                                     QtWidgets.QTableWidgetItem(str(block_definition_dict['block' + str(i + 1)])))
             row = row + 1
             i = i + 1
+
 
 # MainWindow window class, parent of Ui_MainWindow
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -841,6 +879,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     w = MainWindow()
     w.showMaximized()

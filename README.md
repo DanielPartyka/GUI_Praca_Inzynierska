@@ -34,9 +34,12 @@ Instalujemy pakiety dla aplikacji
     python -m pip install -r requirements/requirements_windows.txt
 ```
 Instalujemy bibliotekę uamf
+* Wypakowujemy plik uamf-0.5.0
+* Uruchamiamy polecenia
 ```
-    
-    python setup.py install
+    cd uamf-0.5.0
+    python setup.py instal
+    cd ..
 ```
  
 Uruchamiamy Aplikację
@@ -70,9 +73,10 @@ Instalujemy osobno dodatkowy pakiet do aplikacji (występowały problemy z impor
 ```
 Instalujemy bibliotekę uamf
 ```
-    tar -xf uamf-0.5.0.tar.gz
-    cd uamf-0.5.5
-    python3 setup.py install
+    $ tar -xf uamf-0.5.0.tar.gz
+    $ cd uamf-0.5.0
+    $ touch .version
+    $ python3 setup.py install
 ```
 Uruchamiamy Aplikację
 ```
