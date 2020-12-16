@@ -35,7 +35,7 @@ Instalujemy pakiety dla aplikacji
 ```
 Instalujemy bibliotekę uamf
 ```
-    cd imported_library_uamf/uamf-0.5.0
+    
     python setup.py install
 ```
  
@@ -70,8 +70,9 @@ Instalujemy osobno dodatkowy pakiet do aplikacji (występowały problemy z impor
 ```
 Instalujemy bibliotekę uamf
 ```
-    cd imported_library_uamf/uamf-0.5.0
-    python setup.py install
+    tar -xf uamf-0.5.0.tar.gz
+    cd uamf-0.5.5
+    python3 setup.py install
 ```
 Uruchamiamy Aplikację
 ```
