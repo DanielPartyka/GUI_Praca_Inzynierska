@@ -34,7 +34,7 @@ Instalujemy pakiety dla aplikacji
     python -m pip install -r requirements/requirements_windows.txt
 ```
 Instalujemy bibliotekę uamf
-* Wypakowujemy plik uamf-0.5.0
+* Wypakowujemy plik uamf-0.5.0.zip
 * Uruchamiamy polecenia
 ```
     cd uamf-0.5.0
