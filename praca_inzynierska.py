@@ -11,6 +11,7 @@ from zipfile import ZipFile
 import tarfile
 import cv2
 import pandas as pd
+import fnmatch
 import numpy as np
 import scipy.io
 from uamf import BlockMeta
@@ -26,6 +27,8 @@ textObjectList = []
 block_definition_dict = {}
 # Contrast and brightness values
 alpha_beta = [50, 10]
+# Amount of files in block definition
+Number_Of_files = []
 
 
 # class, stands for block numeration
@@ -46,14 +49,12 @@ class NumerationOfSpot(QGraphicsTextItem):
     def visibility_t(self):
         self.setVisible(True)
 
-
 # class, stands for block created by block definition
-class StaticObject(QGraphicsRectItem):
+class MovableBlock(QGraphicsRectItem):
     x0cord = 0
     x1cord = 0
     y0cord = 0
     y1cord = 0
-
     def __init__(self, x, y, w, h, id):
         super().__init__(0, 0, w, h)
         self.id = id
@@ -63,12 +64,12 @@ class StaticObject(QGraphicsRectItem):
         self.setPen(QPen(QColor(0, 0, 0), 1.0, Qt.SolidLine))
         self.setPos(x, y)
         self.setAcceptHoverEvents(True)
-        StaticObject.amount_of_spots = 0
-        StaticObject.x0cord = 0
-        StaticObject.x1cord = 0
-        StaticObject.y0cord = 0
-        StaticObject.y1cord = 0
-        StaticObject.mode_of_working = 'AD'
+        MovableBlock.amount_of_spots = 0
+        MovableBlock.x0cord = 0
+        MovableBlock.x1cord = 0
+        MovableBlock.y0cord = 0
+        MovableBlock.y1cord = 0
+        MovableBlock.mode_of_working = 'AD'
 
     # Getters and Setters of class
 
@@ -82,88 +83,91 @@ class StaticObject(QGraphicsRectItem):
         return self.h
 
     def set_x0cord(self, x0):
-        StaticObject.x0cord = x0
+        MovableBlock.x0cord = x0
 
     def set_x1cord(self, x1):
-        StaticObject.x1cord = x1
+        MovableBlock.x1cord = x1
 
     def set_y0cord(self, y0):
-        StaticObject.y0cord = y0
+        MovableBlock.y0cord = y0
 
     def set_y1cord(self, y1):
-        StaticObject.y1cord = y1
+        MovableBlock.y1cord = y1
 
     def get_x0cord(self):
-        return StaticObject.x0cord
+        return MovableBlock.x0cord
 
     def get_x1cord(self):
-        return StaticObject.x1cord
+        return MovableBlock.x1cord
 
     def get_y0cord(self):
-        return StaticObject.y0cord
+        return MovableBlock.y0cord
 
     def get_y1cord(self):
-        return StaticObject.y1cord
+        return MovableBlock.y1cord
 
     def set_amount_of_spots(self, value):
-        StaticObject.amount_of_spots = value
+        MovableBlock.amount_of_spots = value
 
     def get_amount_of_spots(self):
-        return StaticObject.amount_of_spots
+        return MovableBlock.amount_of_spots
 
     def set_mode_of_working(self, mode):
-        StaticObject.mode_of_working = mode
+        MovableBlock.mode_of_working = mode
 
     def get_mode_of_working(self):
-        return StaticObject.mode_of_working
+        return MovableBlock.mode_of_working
 
     # Mouse events, triggered by block move
 
     def mouseMoveEvent(self, event):
 
-        orig_cursor_position = event.lastScenePos()
+        # Get the previous position of mouse cursor
+        original_cursor_position = event.lastScenePos()
+        # Get the current position of mouse cursor
         updated_cursor_position = event.scenePos()
 
-        orig_position = self.scenePos()
+        # Cords of the block
+        original_block_position = self.scenePos()
 
-        updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
-        updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
+        updated_cursor_x = updated_cursor_position.x() - original_cursor_position.x() + original_block_position.x()
+        updated_cursor_y = updated_cursor_position.y() - original_cursor_position.y() + original_block_position.y()
 
         # Current block cords
         y0 = int(self.y())
         x0 = int(self.x())
-        y1 = int(StaticObject.get_h(self))
-        x1 = int(StaticObject.get_w(self))
+        y1 = int(MovableBlock.get_h(self))
+        x1 = int(MovableBlock.get_w(self))
 
-        block_size_x = StaticObject.get_w(self)
-        block_size_y = StaticObject.get_h(self)
+        block_size_x = MovableBlock.get_w(self)
+        block_size_y = MovableBlock.get_h(self)
 
         # Checking image borders
         if updated_cursor_x >= 0 and updated_cursor_y >= 0 and updated_cursor_x <= im_size[
             1] - block_size_x and updated_cursor_y <= im_size[0] - block_size_y:
             self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
             # Updating the cords of block
-            block_definition_dict[StaticObject.get_id(self)].position.x = x0
-            block_definition_dict[StaticObject.get_id(self)].position.y = y0
-            block_definition_dict[StaticObject.get_id(self)].width = x1
-            block_definition_dict[StaticObject.get_id(self)].height = y1
+            block_definition_dict[MovableBlock.get_id(self)].position.x = x0
+            block_definition_dict[MovableBlock.get_id(self)].position.y = y0
+            block_definition_dict[MovableBlock.get_id(self)].width = x1
+            block_definition_dict[MovableBlock.get_id(self)].height = y1
 
-        # Change color of block after moving
+        # Changing color of block after moving
         self.setBrush(QBrush(QColor(0, 0, 255, 100)))
         self.setPen(QPen(QColor(0, 0, 0), 1.0, Qt.SolidLine))
         # Setting block modification status to true
-        block_definition_dict['block' + str(StaticObject.get_id(self))] = 'Yes'
+        block_definition_dict['block' + str(MovableBlock.get_id(self))] = 'Yes'
 
     def mousePressEvent(self, event):
         for tol in textObjectList:
-            if tol.id == int(StaticObject.get_id(self)):
+            if tol.id == int(MovableBlock.get_id(self)):
                 tol.visibility_f()
 
     def mouseReleaseEvent(self, event):
 
         self.set_net_of_spots_on_image()
         Ui_MainWindow.open_new_window(self, 'temporary_images/temporaryimage1.png',
-                                      'Block: ' + str(StaticObject.get_id(self)), StaticObject.get_id(self))
+                                      'Block: ' + str(MovableBlock.get_id(self)), MovableBlock.get_id(self))
 
     # Function which creates a spot net in block
     def set_net_of_spots_on_image(self):
@@ -172,13 +176,14 @@ class StaticObject(QGraphicsRectItem):
         img = np.array(image_o)
         y0 = int(self.y())
         x0 = int(self.x())
-        y1 = int(StaticObject.get_h(self) + int(self.y()))
-        x1 = int(StaticObject.get_w(self) + int(self.x()))
+        y1 = int(MovableBlock.get_h(self) + int(self.y()))
+        x1 = int(MovableBlock.get_w(self) + int(self.x()))
 
         npimg = image_o.crop((x0, y0, x1, y1))
         imsave = npimg.save('temporary_images/temporaryimage.png')
 
-        imagee = cv2.imread('temporary_images/temporaryimage.png')[..., ::-1]
+        imagee = cv2.imread('temporary_images/'
+                            'temporaryimage.png')[..., ::-1]
 
         alpha = alpha_beta[0]
         beta = alpha_beta[1]
@@ -186,8 +191,8 @@ class StaticObject(QGraphicsRectItem):
         resized = cv2.convertScaleAbs(imagee, alpha=alpha, beta=beta)
         h, w, c = resized.shape
 
-        nColumns = block_definition_dict[StaticObject.get_id(self)].columns_number
-        nRows = block_definition_dict[StaticObject.get_id(self)].rows_number
+        nColumns = block_definition_dict[MovableBlock.get_id(self)].columns_number
+        nRows = block_definition_dict[MovableBlock.get_id(self)].rows_number
 
         # x0 left corner green block
         start_x0_cord_green = 0
@@ -198,17 +203,19 @@ class StaticObject(QGraphicsRectItem):
         # x1 cord
         x1_cord = 0
 
+        # space between cells
         padding = 4
 
         width_of_block = int(w / nColumns)
         height_of_block = int((h + (nRows * 5)) / nRows)
 
+        # thickness of drawn cell
         thickness = 1
         iteration = 0
         block_width = width_of_block
         block_width_red = width_of_block + start_x0_cord_red
 
-        # Draw the spot
+        # Draw the net
         for rows in range(0, nRows):
             iteration += 1
             if iteration > 1:
@@ -219,11 +226,13 @@ class StaticObject(QGraphicsRectItem):
                 block_width_red = width_of_block + start_x0_cord_red
             for columns in range(0, nColumns):
                 if iteration % 2 != 0:
+                    # draw green cell
                     resized = cv2.rectangle(resized, (start_x0_cord_green + padding, y0),
                                             (block_width, height_of_block + y0), (0, 255, 0), thickness)
                     start_x0_cord_green += width_of_block
                     block_width += width_of_block
                 else:
+                    # draw red cell
                     resized = cv2.rectangle(resized, (start_x0_cord_red + padding, y0),
                                             (block_width_red, height_of_block + y0), (0, 0, 255), thickness)
                     start_x0_cord_red += width_of_block
@@ -232,7 +241,7 @@ class StaticObject(QGraphicsRectItem):
         cv2.imwrite('temporary_images/temporaryimage1.png', resized)
 
         for tol in textObjectList:
-            if tol.id == int(StaticObject.get_id(self)):
+            if tol.id == int(MovableBlock.get_id(self)):
                 tol.visibility_t()
                 tol.setPos(int(self.x() + 35), int(self.y()))
 
@@ -311,7 +320,7 @@ class Ui_MainWindow(object):
         self.tableWidget.setColumnCount(11)
         self.tableWidget.setHorizontalHeaderLabels(
             ['Block number', 'x0 (pixels)', 'y0 (pixels)', 'x1 (pixels)', 'y1 (pixels)', 'width (pixels)',
-             'height (pixels)', 'rows number', 'column number', 'amount of spots', 'Modified'])
+             'height (pixels)', 'rows number', 'columns number', 'amount of spots', 'Modified'])
         self.tableWidget.setColumnWidth(0, 163)
         self.tableWidget.setColumnWidth(1, 163)
         self.tableWidget.setColumnWidth(2, 163)
@@ -428,8 +437,8 @@ class Ui_MainWindow(object):
 
     # Event filter which catches exiting of the block spot net
     def eventFilter(self, source, event):
-        if event.type() == 24 and len(block_definition_dict) > 0:
-            n = 48
+        if event.type() == 24 and len(block_definition_dict) > 0 and len(Number_Of_files) > 0:
+            n = Number_Of_files[0]
             self.filltable(n)
         return super(MainWindow, self).eventFilter(source, event)
 
@@ -445,6 +454,7 @@ class Ui_MainWindow(object):
                 extension = splited_file.split('.')[-1]
 
                 self.clear_MatReading_folder()
+                Number_Of_files.clear()
 
                 try:
                     if extension == 'gz':
@@ -477,13 +487,12 @@ class Ui_MainWindow(object):
                 self.clearing_table()
                 self.scene.addPixmap(QPixmap(image))
 
-                Number_Of_Files = 0
                 ROOT_DIR = os.path.abspath(os.curdir)
                 p = str(ROOT_DIR) + "/MatReading/"
                 fixed_path = p + name_of_block_location_folder
                 path_of_mat = os.path.abspath(fixed_path)
 
-                Number_Of_Files = 48
+                Number_Of_files.append(len(fnmatch.filter(os.listdir(fixed_path), '*.mat')))
 
                 tif = image.split('/')[-1]
                 tif2 = tif.split('.')[-1]
@@ -498,7 +507,7 @@ class Ui_MainWindow(object):
 
                 im_size = w, h
                 # amount of blocks
-                n = Number_Of_Files
+                n = Number_Of_files[0]
                 counter = 0
                 if n >= 3:
                     for i in range(0, n):
@@ -534,7 +543,7 @@ class Ui_MainWindow(object):
 
                         # Draw blocks on image
                         if counter == 0:
-                            moveObject = StaticObject(centerx, centery, posx, posy, i + 1)
+                            moveObject = MovableBlock(centerx, centery, posx, posy, i + 1)
                             nos = NumerationOfSpot(i + 1)
                             nos.setPos(centerx * 1.15, centery)
                             nos.setPlainText(str(str(i + 1) + '.'))
@@ -542,7 +551,7 @@ class Ui_MainWindow(object):
                             textObjectList.append((nos))
                             counter += 1
                         elif counter == 1:
-                            moveObject = StaticObject(centerx, centery, posx, posy, i + 1)
+                            moveObject = MovableBlock(centerx, centery, posx, posy, i + 1)
                             nos = NumerationOfSpot(i + 1)
                             nos.setPos(centerx * 1.05, centery)
                             nos.setPlainText(str(str(i + 1) + '.'))
@@ -550,7 +559,7 @@ class Ui_MainWindow(object):
                             textObjectList.append((nos))
                             counter += 1
                         elif counter == 2:
-                            moveObject = StaticObject(centerx, centery, posx, posy, i + 1)
+                            moveObject = MovableBlock(centerx, centery, posx, posy, i + 1)
                             nos = NumerationOfSpot(i + 1)
                             nos.setPos(centerx * 1.02, centery)
                             nos.setPlainText(str(str(i + 1) + '.'))
@@ -558,7 +567,7 @@ class Ui_MainWindow(object):
                             textObjectList.append((nos))
                             counter += 1
                         elif counter == 3:
-                            moveObject = StaticObject(centerx, centery, posx, posy, i + 1)
+                            moveObject = MovableBlock(centerx, centery, posx, posy, i + 1)
                             nos = NumerationOfSpot(i + 1)
                             nos.setPos(centerx * 1.01, centery)
                             nos.setPlainText(str(str(i + 1) + '.'))
@@ -572,7 +581,8 @@ class Ui_MainWindow(object):
                     self.scene.addItem(y)
 
                 self.view.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
-                self.filltable(n)
+                print(Number_Of_files[0])
+                self.filltable(Number_Of_files[0])
                 self.horizontalScrollBar.setVisible(True)
                 self.horizontalScrollBar_2.setVisible(True)
                 self.label_3.setVisible(True)
@@ -642,7 +652,7 @@ class Ui_MainWindow(object):
     def save_results(self, save_as):
         try:
             sResultList = []
-            for i in range(0, 48):
+            for i in range(0, Number_Of_files[0]):
                 sResultList.append([block_definition_dict[i + 1].position.x, block_definition_dict[i + 1].position.y,
                                     block_definition_dict[i + 1].width + block_definition_dict[i + 1].position.x,
                                     block_definition_dict[i + 1].height + block_definition_dict[i + 1].position.y,
