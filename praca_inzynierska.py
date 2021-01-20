@@ -15,7 +15,7 @@ import fnmatch
 import numpy as np
 import scipy.io
 from uamf import BlockMeta
-from uamf.ds import Size, Point
+from uamf.ds import Size, Point, Spot
 
 from window import MainWindow1, rect_list
 
@@ -492,7 +492,12 @@ class Ui_MainWindow(object):
                 fixed_path = p + name_of_block_location_folder
                 path_of_mat = os.path.abspath(fixed_path)
 
-                Number_Of_files.append(len(fnmatch.filter(os.listdir(fixed_path), '*.mat')))
+                number_of_mat = len(fnmatch.filter(os.listdir(fixed_path), '*.mat'))
+                number_of_json = len(fnmatch.filter(os.listdir(fixed_path), '*.json'))
+                if (number_of_mat == 0):
+                    Number_Of_files.append(number_of_json)
+                else:
+                    Number_Of_files.append(number_of_mat)
 
                 tif = image.split('/')[-1]
                 tif2 = tif.split('.')[-1]
@@ -524,22 +529,57 @@ class Ui_MainWindow(object):
                                             mat_path = x
                                             break
 
+                        path_of_read_files = mat_path.split('.')[1]
                         # Reading MetaData from .mat files
-                        mat = scipy.io.loadmat('MatReading/' + name_of_block_location_folder + '/' + mat_path)
-                        math_key = mat_path.split('.')
+                        if path_of_read_files == 'mat':
+                            mat = scipy.io.loadmat('MatReading/' + name_of_block_location_folder + '/' + mat_path)
+                            math_key = mat_path.split('.')
 
-                        posy = mat[math_key[0]]['blockHeightPix'][0][0][0][0]
-                        posx = mat[math_key[0]]['blockWidthPix'][0][0][0][0]
-                        centerx = mat[math_key[0]]['blockCornerX'][0][0][0][0]
-                        centery = mat[math_key[0]]['blockCornerY'][0][0][0][0]
-                        amount_of_columns = mat[math_key[0]]['nColumns'][0][0][0][0]
-                        amount_of_rows = mat[math_key[0]]['nRows'][0][0][0][0]
-                        amount_of_spots = mat[math_key[0]]['nFeatures'][0][0][0][0]
+                            posy = mat[math_key[0]]['blockHeightPix'][0][0][0][0]
+                            posx = mat[math_key[0]]['blockWidthPix'][0][0][0][0]
+                            centerx = mat[math_key[0]]['blockCornerX'][0][0][0][0]
+                            centery = mat[math_key[0]]['blockCornerY'][0][0][0][0]
+                            amount_of_columns = mat[math_key[0]]['nColumns'][0][0][0][0]
+                            amount_of_rows = mat[math_key[0]]['nRows'][0][0][0][0]
+                            amount_of_spots = mat[math_key[0]]['nFeatures'][0][0][0][0]
 
-                        block = BlockMeta(mat_path, Size(posy, posx), amount_of_rows, amount_of_columns,
-                                          amount_of_spots, mat_path, Point(centerx, centery), list)
-                        block_definition_dict[i + 1] = block
-                        block_definition_dict['block' + str(i + 1)] = 'No'
+                            block = BlockMeta(mat_path, Size(posy, posx), amount_of_rows, amount_of_columns,
+                                              amount_of_spots, mat_path, Point(centerx, centery), list)
+                            block_definition_dict[i + 1] = block
+                            block_definition_dict['block' + str(i + 1)] = 'No'
+
+                        # Reading MetaData from .json uamf files
+                        elif path_of_read_files == 'json':
+
+                            spot_data = Spot(1, 10, 11, Point(100, 120), Size(12, 14), Point(105, 126), False)
+                            b = BlockMeta("", Size(100, 100), 10, 15, 10, "", Point(100, 100),
+                                              spot_type=dict)
+                            b.add_spot(spot_data)
+                            b.calc_spots_number()
+                            b.calc_mean_spot_size()
+
+                            read_block = b.from_file('MatReading/' + name_of_block_location_folder + '/' + mat_path)
+                            posy = read_block.height
+                            posx = read_block.width
+                            centerx = read_block.pos_x
+                            centery = read_block.pos_y
+                            amount_of_columns = read_block.columns_number
+                            amount_of_rows = read_block.rows_number
+                            amount_of_spots = read_block.spots_number
+
+                            block = BlockMeta(mat_path, Size(posy, posx), amount_of_rows, amount_of_columns,
+                                              amount_of_spots, mat_path, Point(centerx, centery), list)
+                            block_definition_dict[i + 1] = block
+                            block_definition_dict['block' + str(i + 1)] = 'No'
+
+                        else:
+                            msg = QMessageBox()
+                            msg.setWindowTitle("Extracting")
+                            msg.setText(
+                                "There is a problem with extracting file. Files must have extensions .zip or .tar.gz and must contain mat or json files")
+                            msg.setIcon(QMessageBox.Warning)
+                            x = msg.exec_()
+                            return 0
 
                         # Draw blocks on image
                         if counter == 0:
@@ -581,7 +621,6 @@ class Ui_MainWindow(object):
                     self.scene.addItem(y)
 
                 self.view.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
-                print(Number_Of_files[0])
                 self.filltable(Number_Of_files[0])
                 self.horizontalScrollBar.setVisible(True)
                 self.horizontalScrollBar_2.setVisible(True)
@@ -889,7 +928,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 if __name__ == "__main__":
     import sys
-
+    # Start the application
     app = QtWidgets.QApplication(sys.argv)
     w = MainWindow()
     w.showMaximized()
