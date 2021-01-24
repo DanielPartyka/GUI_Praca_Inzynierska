@@ -5,7 +5,13 @@
 #### Uruchamianie Aplikacji
 
 Do uruchomienia aplikacji w systemie Windows i Linux użyte zostanie narzędzie
-pip oraz virtualenv. Do uruchomienia aplikacji potrzebny jest język python w wersji 3.6+
+pip oraz virtualenv. Do uruchomienia aplikacji potrzebny jest język python w wersji 3.8.3
+Ważna jest zgodność wersji języka python, dla wersji 3.7 (pobranej z Microsoft Store) występuje błąd
+z biblioteką .dll dla środowiska Qt. W wersji 3.9.1 (najnowszej na dzień 24.01.2021) występuje bład z pobraniem
+bibliotek opencv, numpy. 
+
+Odpowiednią wersję 3.8.3 należy pobrać z oficialnej strony. <br>
+Link: https://www.python.org/downloads/release/python-383/
 
 ### Windows
 
